@@ -1,17 +1,32 @@
-/* app/page.module.css */
 .container {
+  background-color: #0a1128;
+  color: #00ff00;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+  font-family: "Courier New", Courier, monospace;
 }
 
-.button {
+.username {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.tip-amount {
+  font-size: 3rem;
+  border: 3px solid #8a2be2;
   padding: 10px 20px;
-  margin: 10px;
+  margin-bottom: 20px;
+  color: #00ff00;
 }
 
-.error {
-  color: red;
+.footer {
+  font-size: 1.2rem;
+  color: #00ff00;
+}
+
+.footer span {
+  color: #00ff00;
 }

@@ -54,7 +54,19 @@ export const handleRequest = frames(async (ctx) => {
     if (!username) {
       return {
         image: (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0A1128",
+              color: "#00FF00",
+              fontFamily: "'Courier New', Courier, monospace",
+            }}
+          >
             Username not found for FID {fid}.
           </div>
         ),
@@ -82,7 +94,19 @@ export const handleRequest = frames(async (ctx) => {
     if (tipAmount == null) {
       return {
         image: (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0A1128",
+              color: "#00FF00",
+              fontFamily: "'Courier New', Courier, monospace",
+            }}
+          >
             Tip amount not found for username @{username}.
           </div>
         ),
@@ -90,15 +114,84 @@ export const handleRequest = frames(async (ctx) => {
       };
     }
 
+    const currentDate = new Date().toLocaleDateString();
+
     return {
       image: (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          Username: @{username}
-          <br />
-          Daily Tip Amount: {tipAmount}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0A1128",
+            color: "#00FF00",
+            fontFamily: "'Courier New', Courier, monospace",
+            aspectRatio: "1.91/1",
+          }}
+        >
+          <div
+            style={{ display: "flex", fontSize: "3rem", marginBottom: "20px" }}
+          >
+            Your Daily Tips
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "6rem",
+              border: "3px solid #8A2BE2",
+              padding: "10px 20px",
+              marginBottom: "20px",
+              color: "#00FF00",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {tipAmount} $degen
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            Showing current tips received for...
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            @{username}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            {currentDate}
+          </div>
+          <div
+            style={{ display: "flex", fontSize: "1.2rem", color: "#00FF00" }}
+          >
+            frame by @cmplx.eth
+          </div>
         </div>
       ),
-      buttons: [],
+      buttons: [
+        <Button action="link" target="https://warpcast.com/cmplx.eth">
+          Follow cmplx.eth
+        </Button>,
+      ],
       data: { fid, username, tipAmount },
     };
   } catch (error: unknown) {
@@ -106,8 +199,20 @@ export const handleRequest = frames(async (ctx) => {
       console.error(`Error: ${error.message}`);
       return {
         image: (
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            An error occurred: ${error.message}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0A1128",
+              color: "#00FF00",
+              fontFamily: "'Courier New', Courier, monospace",
+            }}
+          >
+            An error occurred: {error.message}
           </div>
         ),
         buttons: [],
@@ -116,7 +221,19 @@ export const handleRequest = frames(async (ctx) => {
     console.error("Unknown error occurred");
     return {
       image: (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0A1128",
+            color: "#00FF00",
+            fontFamily: "'Courier New', Courier, monospace",
+          }}
+        >
           An unknown error occurred.
         </div>
       ),
