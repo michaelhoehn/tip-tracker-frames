@@ -12,6 +12,7 @@ const frames = createFrames<State>({
   basePath: "/api/frame",
   middleware: [
     farcasterHubContext({
+      // remove if you aren't using @frames.js/debugger or you just don't want to use the debugger hub
       ...(process.env.NODE_ENV === "production"
         ? {}
         : {
@@ -96,35 +97,16 @@ export const handleRequest = frames(async (ctx) => {
 
     const duneData = await duneResponse.json();
     const tipAmount = duneData.result?.rows[0]["Total Tip Amount"];
-
-    if (tipAmount == null) {
-      return {
-        image: (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#0A1128",
-              color: "#00FF00",
-              fontFamily: "'Courier New', Courier, monospace",
-            }}
-          >
-            Tip amount not found for username @{username}.
-          </div>
-        ),
-        buttons: [],
-      };
-    }
-
+    const queryDate = new Date(
+      duneData.result?.rows[0]["Date"]
+    ).toLocaleDateString();
     const currentDate = new Date().toLocaleDateString();
+
+    const finalTipAmount = queryDate === currentDate ? tipAmount : 0;
 
     const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
     const embedUrl = encodeURIComponent(
-      `${appURL()}/api/frame?fid=${fid}&tipAmount=${tipAmount}&username=${username}&date=${currentDate}`
+      `${appURL()}/api/frame?fid=${fid}&tipAmount=${finalTipAmount}&username=${username}&date=${currentDate}`
     );
     const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
 
@@ -160,7 +142,7 @@ export const handleRequest = frames(async (ctx) => {
               whiteSpace: "nowrap",
             }}
           >
-            {tipAmount} $degen
+            {finalTipAmount} $degen
           </div>
           <div
             style={{
@@ -207,7 +189,7 @@ export const handleRequest = frames(async (ctx) => {
           Share
         </Button>,
       ],
-      state: { username, tipAmount, date: currentDate },
+      state: { username, tipAmount: finalTipAmount, date: currentDate },
     };
   } catch (error: unknown) {
     if (error instanceof Error) {
