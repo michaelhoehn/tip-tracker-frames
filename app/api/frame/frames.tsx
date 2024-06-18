@@ -116,6 +116,13 @@ export const handleRequest = frames(async (ctx) => {
 
     const currentDate = new Date().toLocaleDateString();
 
+    // Construct the sharing URL
+    const shareText = encodeURIComponent(`Daily Tips Received by @cmplx.eth`);
+    const embedUrl = encodeURIComponent(
+      `${appURL()}/api/frame?fid=${fid}&tipAmount=${tipAmount}&username=${username}&date=${currentDate}`
+    );
+    const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
+
     return {
       image: (
         <div
@@ -190,6 +197,9 @@ export const handleRequest = frames(async (ctx) => {
       buttons: [
         <Button action="link" target="https://warpcast.com/cmplx.eth">
           Follow cmplx.eth
+        </Button>,
+        <Button action="link" target={shareUrl}>
+          Share
         </Button>,
       ],
       data: { fid, username, tipAmount },
