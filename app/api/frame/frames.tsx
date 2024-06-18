@@ -19,14 +19,15 @@ const frames = createFrames({
 export const handleRequest = frames(async (ctx) => {
   const fid = ctx.message?.requesterFid;
 
-  const imageUrl = new URL("/image.png", appURL()).toString();
+  // const imageUrl = new URL("/image.png", appURL()).toString();
+  const imageUrl = new URL("/image-new.png", appURL()).toString();
 
   if (!ctx.url.searchParams.has("checkTips")) {
     return {
       image: <img src={imageUrl} alt="Static Image" />,
       buttons: [
         <Button action="post" target={{ query: { checkTips: true } }}>
-          Check Daily Tips
+          Count My Tips
         </Button>,
       ],
     };
