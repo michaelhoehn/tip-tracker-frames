@@ -2,11 +2,16 @@ import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
 
-const frames = createFrames({
+export type State = {
+  username?: string;
+  tipAmount?: number;
+  date?: string;
+};
+
+const frames = createFrames<State>({
   basePath: "/api/frame",
   middleware: [
     farcasterHubContext({
-      // remove if you aren't using @frames.js/debugger or you just don't want to use the debugger hub
       ...(process.env.NODE_ENV === "production"
         ? {}
         : {
@@ -14,12 +19,12 @@ const frames = createFrames({
           }),
     }),
   ],
+  initialState: {},
 });
 
 export const handleRequest = frames(async (ctx) => {
   const fid = ctx.message?.requesterFid;
 
-  // const imageUrl = new URL("/image.png", appURL()).toString();
   const imageUrl = new URL("/image-new.png", appURL()).toString();
 
   if (!ctx.url.searchParams.has("checkTips")) {
@@ -117,8 +122,7 @@ export const handleRequest = frames(async (ctx) => {
 
     const currentDate = new Date().toLocaleDateString();
 
-    // Construct the sharing URL
-    const shareText = encodeURIComponent(`Daily Tips Received by @cmplx.eth`);
+    const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
     const embedUrl = encodeURIComponent(
       `${appURL()}/api/frame?fid=${fid}&tipAmount=${tipAmount}&username=${username}&date=${currentDate}`
     );
@@ -203,7 +207,7 @@ export const handleRequest = frames(async (ctx) => {
           Share
         </Button>,
       ],
-      data: { fid, username, tipAmount },
+      state: { username, tipAmount, date: currentDate },
     };
   } catch (error: unknown) {
     if (error instanceof Error) {
