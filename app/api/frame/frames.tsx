@@ -1,5 +1,6 @@
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
+import { appURL } from "../../../utils";
 
 const frames = createFrames({
   basePath: "/api/frame",
@@ -17,44 +18,23 @@ const frames = createFrames({
 
 export const handleRequest = frames(async (ctx) => {
   const fid = ctx.message?.requesterFid;
-  const displayName = ctx.message?.requesterUserData?.displayName;
 
-  if (!fid) {
-    console.error("FID not found");
-    return {
-      image: (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          Unable to retrieve FID. Please try again.
-        </div>
-      ),
-      buttons: [],
-    };
-  }
-
-  console.log(`FID: ${fid}`);
+  const imageUrl = new URL("/image.png", appURL()).toString();
 
   if (!ctx.url.searchParams.has("checkTips")) {
     return {
-      image: (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          Hello, {displayName}! Your FID is {fid}.
-        </div>
-      ),
+      image: <img src={imageUrl} alt="Static Image" />,
       buttons: [
         <Button action="post" target={{ query: { checkTips: true } }}>
           Check Daily Tips
         </Button>,
       ],
-      data: { fid },
     };
   }
 
   try {
-    // Fetch username and tip amount based on fid
     console.log(`Fetching username for FID: ${fid}`);
     const neynarUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`;
-    console.log(`Neynar URL: ${neynarUrl}`);
-
     const neynarResponse = await fetch(neynarUrl, {
       headers: {
         accept: "application/json",
@@ -62,17 +42,13 @@ export const handleRequest = frames(async (ctx) => {
       },
     });
 
-    console.log(`Neynar response status: ${neynarResponse.status}`);
-    const neynarText = await neynarResponse.text();
-    // console.log(`Neynar raw response: ${neynarText}`);
-
     if (!neynarResponse.ok) {
       throw new Error(
         `Neynar API request failed with status: ${neynarResponse.status}`
       );
     }
 
-    const neynarData = JSON.parse(neynarText);
+    const neynarData = await neynarResponse.json();
     const username = neynarData.users[0]?.username;
 
     if (!username) {
@@ -88,17 +64,11 @@ export const handleRequest = frames(async (ctx) => {
 
     console.log(`Fetching tip amount for username: @${username}`);
     const duneUrl = `https://api.dune.com/api/v1/query/3835652/results?limit=1&filters=username='@${username}'`;
-    console.log(`Dune URL: ${duneUrl}`);
-
     const duneResponse = await fetch(duneUrl, {
       headers: {
         "X-Dune-API-Key": process.env.DUNE_API_KEY as string,
       },
     });
-
-    console.log(`Dune response status: ${duneResponse.status}`);
-    const duneText = await duneResponse.text();
-    // console.log(`Dune raw response: ${duneText}`);
 
     if (!duneResponse.ok) {
       throw new Error(
@@ -106,7 +76,7 @@ export const handleRequest = frames(async (ctx) => {
       );
     }
 
-    const duneData = JSON.parse(duneText);
+    const duneData = await duneResponse.json();
     const tipAmount = duneData.result?.rows[0]["Total Tip Amount"];
 
     if (tipAmount == null) {

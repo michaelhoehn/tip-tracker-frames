@@ -20,7 +20,7 @@ export default function HomePageClient() {
       if (!response.ok) throw new Error("Request failed");
 
       const data = await response.json();
-      const { fid, username, tipAmount } = data;
+      const { username, tipAmount } = data;
 
       setUsername(username);
       setTipAmount(tipAmount);
