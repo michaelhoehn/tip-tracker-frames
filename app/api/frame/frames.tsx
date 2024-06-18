@@ -54,7 +54,6 @@ export const handleRequest = frames(async (ctx) => {
     console.log(`Fetching username for FID: ${fid}`);
     const neynarUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`;
     console.log(`Neynar URL: ${neynarUrl}`);
-    console.log(`Neynar API Key: ${process.env.NEYNAR_API_KEY}`);
 
     const neynarResponse = await fetch(neynarUrl, {
       headers: {
@@ -65,7 +64,7 @@ export const handleRequest = frames(async (ctx) => {
 
     console.log(`Neynar response status: ${neynarResponse.status}`);
     const neynarText = await neynarResponse.text();
-    console.log(`Neynar raw response: ${neynarText}`);
+    // console.log(`Neynar raw response: ${neynarText}`);
 
     if (!neynarResponse.ok) {
       throw new Error(
@@ -90,7 +89,6 @@ export const handleRequest = frames(async (ctx) => {
     console.log(`Fetching tip amount for username: @${username}`);
     const duneUrl = `https://api.dune.com/api/v1/query/3835652/results?limit=1&filters=username='@${username}'`;
     console.log(`Dune URL: ${duneUrl}`);
-    console.log(`Dune API Key: ${process.env.DUNE_API_KEY}`);
 
     const duneResponse = await fetch(duneUrl, {
       headers: {
@@ -100,7 +98,7 @@ export const handleRequest = frames(async (ctx) => {
 
     console.log(`Dune response status: ${duneResponse.status}`);
     const duneText = await duneResponse.text();
-    console.log(`Dune raw response: ${duneText}`);
+    // console.log(`Dune raw response: ${duneText}`);
 
     if (!duneResponse.ok) {
       throw new Error(
