@@ -1,3 +1,5 @@
+"use client"; // Add this line to mark the file as a Client Component
+
 import { appURL } from "../utils";
 import type { Metadata } from "next";
 import { fetchMetadata } from "frames.js/next";
