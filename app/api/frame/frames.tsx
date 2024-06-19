@@ -160,8 +160,11 @@ export const handleRequest = frames(async (ctx) => {
         </div>
       ),
       buttons: [
-        <Button action="link" target="https://warpcast.com/cmplx.eth">
-          Follow cmplx.eth
+        <Button
+          action="link"
+          target="https://warpcast.com/cmplx.eth/0x56ab5eff"
+        >
+          Tip cmplx
         </Button>,
         <Button action="link" target={shareUrl}>
           Share
