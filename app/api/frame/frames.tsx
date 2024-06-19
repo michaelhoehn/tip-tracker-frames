@@ -12,7 +12,6 @@ const frames = createFrames<State>({
   basePath: "/api/frame",
   middleware: [
     farcasterHubContext({
-      // remove if you aren't using @frames.js/debugger or you just don't want to use the debugger hub
       ...(process.env.NODE_ENV === "production"
         ? {}
         : {
@@ -58,31 +57,8 @@ export const handleRequest = frames(async (ctx) => {
     const neynarData = await neynarResponse.json();
     const username = neynarData.users[0]?.username;
 
-    if (!username) {
-      return {
-        image: (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: "100%",
-              backgroundColor: "#0A1128",
-              color: "#00FF00",
-              fontFamily: "'Courier New', Courier, monospace",
-            }}
-          >
-            Username not found for FID {fid}.
-          </div>
-        ),
-        buttons: [],
-      };
-    }
-
-    console.log(`Fetching tip amount for username: @${username}`);
-    const duneUrl = `https://api.dune.com/api/v1/query/3835652/results?limit=1&filters=username='@${username}'`;
+    console.log(`Fetching tip amount for FID: ${fid}`);
+    const duneUrl = `https://api.dune.com/api/v1/query/3835652/results?limit=1&filters=fid=${fid}`;
     const duneResponse = await fetch(duneUrl, {
       headers: {
         "X-Dune-API-Key": process.env.DUNE_API_KEY as string,
@@ -106,7 +82,9 @@ export const handleRequest = frames(async (ctx) => {
 
     const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
     const embedUrl = encodeURIComponent(
-      `${appURL()}/api/frame?fid=${fid}&tipAmount=${finalTipAmount}&username=${username}&date=${currentDate}`
+      `${appURL()}/api/frame?fid=${fid}&tipAmount=${finalTipAmount}&username=${
+        username || fid
+      }&date=${currentDate}`
     );
     const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
 
@@ -162,7 +140,7 @@ export const handleRequest = frames(async (ctx) => {
               marginBottom: "20px",
             }}
           >
-            @{username}
+            @{username || fid}
           </div>
           <div
             style={{
