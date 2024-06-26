@@ -24,12 +24,112 @@ const frames = createFrames<State>({
 
 export const handleRequest = frames(async (ctx) => {
   const fid = ctx.message?.requesterFid;
+  const urlParams = ctx.url.searchParams;
 
-  const imageUrl = new URL("/image-new.png", appURL()).toString();
+  // Extracting URL parameters if available
+  const sharedFid = urlParams.get("fid");
+  const sharedTipAmount = urlParams.get("tipAmount");
+  const sharedUsername = urlParams.get("username");
+  const sharedDate = urlParams.get("date");
 
-  if (!ctx.url.searchParams.has("checkTips")) {
+  // If the URL contains shared state, use it
+  if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
     return {
-      image: <img src={imageUrl} alt="Static Image" />,
+      image: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0A1128",
+            color: "#00FF00",
+            fontFamily: "'Courier New', Courier, monospace",
+            aspectRatio: "1.91/1",
+          }}
+        >
+          <div
+            style={{ display: "flex", fontSize: "3rem", marginBottom: "20px" }}
+          >
+            Your Daily Tips
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "6rem",
+              border: "3px solid #8A2BE2",
+              padding: "10px 20px",
+              marginBottom: "20px",
+              color: "#00FF00",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {sharedTipAmount} $degen
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            Showing current tips received for...
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            @{sharedUsername || sharedFid}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            {sharedDate}
+          </div>
+          <div
+            style={{ display: "flex", fontSize: "1.2rem", color: "#00FF00" }}
+          >
+            frame by @cmplx.eth
+          </div>
+        </div>
+      ),
+      buttons: [
+        <Button
+          action="link"
+          target="https://warpcast.com/cmplx.eth/0x56ab5eff"
+        >
+          Tip cmplx
+        </Button>,
+      ],
+      state: {
+        username: sharedUsername,
+        tipAmount: parseFloat(sharedTipAmount),
+        date: sharedDate,
+      },
+    };
+  }
+
+  // Original logic for generating the frame
+  if (!urlParams.has("checkTips")) {
+    return {
+      image: (
+        <img
+          src={new URL("/image-new.png", appURL()).toString()}
+          alt="Static Image"
+        />
+      ),
       buttons: [
         <Button action="post" target={{ query: { checkTips: true } }}>
           Count My Tips
