@@ -1,3 +1,6 @@
+// todo
+// fix sharing and embed link
+
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
