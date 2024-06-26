@@ -3,7 +3,7 @@ import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
 
 export type State = {
-  fid?: string;
+  fid?: number;
   username?: string;
   tipAmount?: number;
   date?: string;
@@ -115,7 +115,7 @@ export const handleRequest = frames(async (ctx) => {
         </Button>,
       ],
       state: {
-        fid: sharedFid,
+        fid: parseInt(sharedFid, 10),
         username: sharedUsername,
         tipAmount: parseFloat(sharedTipAmount),
         date: sharedDate,
