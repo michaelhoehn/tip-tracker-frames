@@ -1,6 +1,7 @@
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
+import Image from "next/image";
 
 export type State = {
   fid?: number;
@@ -108,6 +109,7 @@ export const handleRequest = frames(async (ctx) => {
       ),
       buttons: [
         <Button
+          key="tip-cmplx"
           action="link"
           target="https://warpcast.com/cmplx.eth/0x56ab5eff"
         >
@@ -127,13 +129,19 @@ export const handleRequest = frames(async (ctx) => {
   if (!urlParams.has("checkTips")) {
     return {
       image: (
-        <img
+        <Image
           src={new URL("/image-new.png", appURL()).toString()}
           alt="Static Image"
+          width={1000}
+          height={1000}
         />
       ),
       buttons: [
-        <Button action="post" target={{ query: { checkTips: true } }}>
+        <Button
+          key="check-tips"
+          action="post"
+          target={{ query: { checkTips: true } }}
+        >
           Count My Tips
         </Button>,
       ],
@@ -263,12 +271,13 @@ export const handleRequest = frames(async (ctx) => {
       ),
       buttons: [
         <Button
+          key="tip-cmplx"
           action="link"
           target="https://warpcast.com/cmplx.eth/0x56ab5eff"
         >
           Tip cmplx
         </Button>,
-        <Button action="link" target={shareUrl}>
+        <Button key="share" action="link" target={shareUrl}>
           Share
         </Button>,
       ],
