@@ -1,11 +1,9 @@
-// todo
-// fix sharing and embed link
-
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
 
 export type State = {
+  fid?: number;
   username?: string;
   tipAmount?: number;
   date?: string;
@@ -30,11 +28,132 @@ export const handleRequest = frames(async (ctx) => {
 
   const imageUrl = new URL("/image-new.png", appURL()).toString();
 
-  if (!ctx.url.searchParams.has("checkTips")) {
+  const urlParams = ctx.url.searchParams;
+
+  // Extracting URL parameters if available
+  const sharedFid = urlParams.get("fid");
+  const sharedTipAmount = urlParams.get("tipAmount");
+  const sharedUsername = urlParams.get("username");
+  const sharedDate = urlParams.get("date");
+
+  // If the URL contains shared state, use it
+  if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
+    const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
+    const embedUrl = encodeURIComponent(
+      `${appURL()}/api/frame?fid=${sharedFid}&tipAmount=${sharedTipAmount}&username=${
+        sharedUsername || sharedFid
+      }&date=${sharedDate}`
+    );
+    const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
+
+    return {
+      image: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0A1128",
+            color: "#00FF00",
+            fontFamily: "'Courier New', Courier, monospace",
+            aspectRatio: "1.91/1",
+          }}
+        >
+          <div
+            style={{ display: "flex", fontSize: "3rem", marginBottom: "20px" }}
+          >
+            Your Daily Tips
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "6rem",
+              border: "3px solid #8A2BE2",
+              padding: "10px 20px",
+              marginBottom: "20px",
+              color: "#00FF00",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {sharedTipAmount} $degen
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            Showing current tips received for...
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            @{sharedUsername || sharedFid}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: "2rem",
+              color: "#00FF00",
+              marginBottom: "20px",
+            }}
+          >
+            {sharedDate}
+          </div>
+          <div
+            style={{ display: "flex", fontSize: "1.2rem", color: "#00FF00" }}
+          >
+            frame by @cmplx.eth
+          </div>
+        </div>
+      ),
+      buttons: [
+        <Button
+          key="tip-cmplx"
+          action="link"
+          target="https://warpcast.com/cmplx.eth/0x56ab5eff"
+        >
+          Tip cmplx
+        </Button>,
+        <Button
+          key="count-tips"
+          action="post"
+          target={{ query: { checkTips: true } }}
+        >
+          Count My Tips
+        </Button>,
+        <Button key="share" action="link" target={shareUrl}>
+          Share
+        </Button>,
+      ],
+      state: {
+        fid: parseInt(sharedFid, 10),
+        username: sharedUsername,
+        tipAmount: parseFloat(sharedTipAmount),
+        date: sharedDate,
+      },
+    };
+  }
+
+  if (!urlParams.has("checkTips")) {
     return {
       image: <img src={imageUrl} alt="Static Image" />,
       buttons: [
-        <Button action="post" target={{ query: { checkTips: true } }}>
+        <Button
+          key="check-tips"
+          action="post"
+          target={{ query: { checkTips: true } }}
+        >
           Count My Tips
         </Button>,
       ],
@@ -164,16 +283,24 @@ export const handleRequest = frames(async (ctx) => {
       ),
       buttons: [
         <Button
+          key="tip-cmplx"
           action="link"
           target="https://warpcast.com/cmplx.eth/0x56ab5eff"
         >
           Tip cmplx
         </Button>,
-        <Button action="link" target={shareUrl}>
+        <Button
+          key="count-tips"
+          action="post"
+          target={{ query: { checkTips: true } }}
+        >
+          Count My Tips
+        </Button>,
+        <Button key="share" action="link" target={shareUrl}>
           Share
         </Button>,
       ],
-      state: { username, tipAmount: finalTipAmount, date: currentDate },
+      state: { fid, username, tipAmount: finalTipAmount, date: currentDate },
     };
   } catch (error: unknown) {
     if (error instanceof Error) {
