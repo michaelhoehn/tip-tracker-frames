@@ -1,12 +1,15 @@
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
 
 export type State = {
   fid?: number;
   username?: string;
   tipAmount?: number;
   date?: string;
+  weeklyTips?: number[];
 };
 
 const frames = createFrames<State>({
@@ -35,6 +38,38 @@ export const handleRequest = frames(async (ctx) => {
   const sharedTipAmount = urlParams.get("tipAmount");
   const sharedUsername = urlParams.get("username");
   const sharedDate = urlParams.get("date");
+
+  // Function to create bar chart
+  const createBarChart = (weeklyTips: number[]) => {
+    const data = {
+      labels: [...Array(7).keys()]
+        .map((i) =>
+          new Date(
+            new Date().setDate(new Date().getDate() - i)
+          ).toLocaleDateString()
+        )
+        .reverse(),
+      datasets: [
+        {
+          label: "Tips received",
+          data: weeklyTips.reverse(),
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    const options = {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    };
+
+    return <Bar data={data} options={options} />;
+  };
 
   // If the URL contains shared state, use it
   if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
@@ -132,6 +167,13 @@ export const handleRequest = frames(async (ctx) => {
         >
           Count My Tips
         </Button>,
+        <Button
+          key="show-weekly"
+          action="post"
+          target={{ query: { showWeekly: true } }}
+        >
+          Show Weekly
+        </Button>,
         <Button key="share" action="link" target={shareUrl}>
           Share
         </Button>,
@@ -145,6 +187,129 @@ export const handleRequest = frames(async (ctx) => {
     };
   }
 
+  if (urlParams.has("showWeekly")) {
+    try {
+      const duneUrl = `https://api.dune.com/api/v1/query/3915099/results?limit=7&filters=fid=${fid}`;
+      const duneResponse = await fetch(duneUrl, {
+        headers: {
+          "X-Dune-API-Key": process.env.DUNE_API_KEY as string,
+        },
+      });
+
+      if (!duneResponse.ok) {
+        throw new Error(
+          `Dune API request failed with status: ${duneResponse.status}`
+        );
+      }
+
+      const duneData = await duneResponse.json();
+      const weeklyTips = duneData.result?.rows.map(
+        (row: any) => row["Total Valid Tips"]
+      );
+
+      const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
+      const embedUrl = encodeURIComponent(
+        `${appURL()}/api/frame?fid=${fid}&weeklyTips=${weeklyTips}`
+      );
+      const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
+
+      return {
+        image: (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0A1128",
+              color: "#00FF00",
+              fontFamily: "'Courier New', Courier, monospace",
+              aspectRatio: "1.91/1",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                fontSize: "3rem",
+                marginBottom: "20px",
+              }}
+            >
+              @{fid} Weekly Tips
+            </div>
+            {createBarChart(weeklyTips)}
+          </div>
+        ),
+        buttons: [
+          <Button
+            key="tip-cmplx"
+            action="link"
+            target="https://warpcast.com/cmplx.eth/0x56ab5eff"
+          >
+            Tip cmplx
+          </Button>,
+          <Button
+            key="count-tips"
+            action="post"
+            target={{ query: { checkTips: true } }}
+          >
+            Count My Tips
+          </Button>,
+          <Button key="share" action="link" target={shareUrl}>
+            Share
+          </Button>,
+        ],
+        state: { fid, weeklyTips },
+      };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error: ${error.message}`);
+        return {
+          image: (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#0A1128",
+                color: "#00FF00",
+                fontFamily: "'Courier New', Courier, monospace",
+              }}
+            >
+              An error occurred: {error.message}
+            </div>
+          ),
+          buttons: [],
+        };
+      }
+      console.error("Unknown error occurred");
+      return {
+        image: (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#0A1128",
+              color: "#00FF00",
+              fontFamily: "'Courier New', Courier, monospace",
+            }}
+          >
+            An unknown error occurred.
+          </div>
+        ),
+        buttons: [],
+      };
+    }
+  }
+
   if (!urlParams.has("checkTips")) {
     return {
       image: <img src={imageUrl} alt="Static Image" />,
@@ -155,6 +320,13 @@ export const handleRequest = frames(async (ctx) => {
           target={{ query: { checkTips: true } }}
         >
           Count My Tips
+        </Button>,
+        <Button
+          key="show-weekly"
+          action="post"
+          target={{ query: { showWeekly: true } }}
+        >
+          Show Weekly
         </Button>,
       ],
     };
@@ -275,6 +447,13 @@ export const handleRequest = frames(async (ctx) => {
           target={{ query: { checkTips: true } }}
         >
           Count My Tips
+        </Button>,
+        <Button
+          key="show-weekly"
+          action="post"
+          target={{ query: { showWeekly: true } }}
+        >
+          Show Weekly
         </Button>,
         <Button key="share" action="link" target={shareUrl}>
           Share

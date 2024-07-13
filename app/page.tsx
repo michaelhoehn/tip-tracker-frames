@@ -11,7 +11,7 @@ const HomePageClient = dynamic(() => import("./HomePageClient"), {
 export async function generateMetadata(): Promise<Metadata> {
   const baseURL = appURL(); // Use the correct base URL
   return {
-    title: "Daily Tips Checker",
+    title: "Degen Tip Jar",
     other: {
       ...(await fetchMetadata(new URL("/api/frame", baseURL))),
     },
