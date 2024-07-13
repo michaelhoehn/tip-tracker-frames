@@ -1,7 +1,8 @@
 import { farcasterHubContext } from "frames.js/middleware";
 import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
-import { Bar } from "react-chartjs-2";
+import ChartComponent from "../../../ChartComponent";
+import React from "react";
 import "chart.js/auto";
 
 export type State = {
@@ -33,45 +34,11 @@ export const handleRequest = frames(async (ctx) => {
 
   const urlParams = ctx.url.searchParams;
 
-  // Extracting URL parameters if available
   const sharedFid = urlParams.get("fid");
   const sharedTipAmount = urlParams.get("tipAmount");
   const sharedUsername = urlParams.get("username");
   const sharedDate = urlParams.get("date");
 
-  // Function to create bar chart
-  const createBarChart = (weeklyTips: number[]) => {
-    const data = {
-      labels: [...Array(7).keys()]
-        .map((i) =>
-          new Date(
-            new Date().setDate(new Date().getDate() - i)
-          ).toLocaleDateString()
-        )
-        .reverse(),
-      datasets: [
-        {
-          label: "Tips received",
-          data: weeklyTips.reverse(),
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-        },
-      ],
-    };
-
-    const options = {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    };
-
-    return <Bar data={data} options={options} />;
-  };
-
-  // If the URL contains shared state, use it
   if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
     const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
     const embedUrl = encodeURIComponent(
@@ -206,6 +173,7 @@ export const handleRequest = frames(async (ctx) => {
       const weeklyTips = duneData.result?.rows.map(
         (row: any) => row["Total Valid Tips"]
       );
+      console.log("Fetched weekly tips:", weeklyTips);
 
       const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
       const embedUrl = encodeURIComponent(
@@ -238,7 +206,19 @@ export const handleRequest = frames(async (ctx) => {
             >
               @{fid} Weekly Tips
             </div>
-            {createBarChart(weeklyTips)}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {weeklyTips && weeklyTips.length > 0 ? (
+                <ChartComponent data={weeklyTips} />
+              ) : (
+                "No data available"
+              )}
+            </div>
           </div>
         ),
         buttons: [
