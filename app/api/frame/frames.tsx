@@ -180,7 +180,7 @@ export const handleRequest = frames(async (ctx) => {
     const username = neynarData.users[0]?.username;
 
     console.log(`Fetching tip amount for FID: ${fid}`);
-    const duneUrl = `https://api.dune.com/api/v1/query/3835652/results?limit=1&filters=fid=${fid}`;
+    const duneUrl = `https://api.dune.com/api/v1/query/3915099/results?limit=1&filters=fid=${fid}`;
     const duneResponse = await fetch(duneUrl, {
       headers: {
         "X-Dune-API-Key": process.env.DUNE_API_KEY as string,
@@ -194,7 +194,7 @@ export const handleRequest = frames(async (ctx) => {
     }
 
     const duneData = await duneResponse.json();
-    const tipAmount = duneData.result?.rows[0]["Total Tip Amount"];
+    const tipAmount = duneData.result?.rows[0]["Total Valid Tips"];
     const queryDate = new Date(
       duneData.result?.rows[0]["Date"]
     ).toLocaleDateString();
@@ -229,7 +229,7 @@ export const handleRequest = frames(async (ctx) => {
           <div
             style={{ display: "flex", fontSize: "3rem", marginBottom: "20px" }}
           >
-            Your Daily Tips
+            @{username || fid} has received
           </div>
           <div
             style={{
@@ -252,27 +252,7 @@ export const handleRequest = frames(async (ctx) => {
               marginBottom: "20px",
             }}
           >
-            Showing current tips received for...
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: "2rem",
-              color: "#00FF00",
-              marginBottom: "20px",
-            }}
-          >
-            @{username || fid}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: "2rem",
-              color: "#00FF00",
-              marginBottom: "20px",
-            }}
-          >
-            {currentDate}
+            In valid tips on {currentDate}
           </div>
           <div
             style={{ display: "flex", fontSize: "1.2rem", color: "#00FF00" }}
