@@ -20,7 +20,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "350px",
+        height: "325px",
         width: "600px",
         backgroundColor: "#0A1128",
       }}
@@ -34,7 +34,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
           flexDirection: "column",
           justifyContent: "space-between",
           alignItems: "flex-end",
-          paddingRight: "20px",
+          // paddingRight: "20px",
           width: "100%",
         }}
       >
@@ -42,7 +42,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "110%",
+            width: "100%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -64,7 +64,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "110%",
+            width: "100%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -86,7 +86,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "110%",
+            width: "100%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -120,7 +120,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
             style={{
               flex: 1,
               margin: "0 2px",
-              backgroundColor: "#8a2be2",
+              backgroundColor: "rgba(0, 255, 0, 0.5)",
               border: "3px solid rgba(0, 255, 0, 1)",
               height: `${(value / maxAmount) * 100}%`,
               display: "flex",

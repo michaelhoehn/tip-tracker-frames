@@ -191,6 +191,8 @@ export const handleRequest = frames(async (ctx) => {
           row["Date"]
         ).getDate()}`,
       }));
+      // Ensure the data is ordered from the earliest to the most recent
+      weeklyData.reverse();
       const weeklyTips = weeklyData.map((data: any) => data.tips);
       const weeklyDates = weeklyData.map((data: any) => data.date);
       console.log("Fetched weekly tips:", weeklyTips);
