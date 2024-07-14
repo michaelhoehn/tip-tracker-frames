@@ -220,7 +220,7 @@ export const handleRequest = frames(async (ctx) => {
 
       const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
       const embedUrl = encodeURIComponent(
-        `${appURL()}/api/frame?fid=${fid}&weeklyTips=${weeklyTips}`
+        `${appURL()}/api/frame?fid=${fid}&weeklyTips=${weeklyTips}&weeklyDates=${weeklyDates}&username=${username}`
       );
       const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
 
