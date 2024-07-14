@@ -40,6 +40,8 @@ export const handleRequest = frames(async (ctx) => {
   const sharedTipAmount = urlParams.get("tipAmount");
   const sharedUsername = urlParams.get("username");
   const sharedDate = urlParams.get("date");
+  const sharedWeeklyTips = urlParams.get("weeklyTips")?.split(",").map(Number);
+  const sharedWeeklyDates = urlParams.get("weeklyDates")?.split(",");
 
   console.log(
     "Shared Params - FID:",
@@ -49,8 +51,93 @@ export const handleRequest = frames(async (ctx) => {
     "Username:",
     sharedUsername,
     "Date:",
-    sharedDate
+    sharedDate,
+    "Weekly Tips:",
+    sharedWeeklyTips,
+    "Weekly Dates:",
+    sharedWeeklyDates
   );
+
+  if (sharedFid && sharedWeeklyTips && sharedWeeklyDates && sharedUsername) {
+    const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
+    const embedUrl = encodeURIComponent(
+      `${appURL()}/api/frame?fid=${sharedFid}&weeklyTips=${sharedWeeklyTips}&weeklyDates=${sharedWeeklyDates}&username=${sharedUsername}`
+    );
+    const shareUrl = `https://warpcast.com/~/compose?text=${shareText}&embeds[]=${embedUrl}`;
+
+    return {
+      image: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0A1128",
+            color: "#00FF00",
+            fontFamily: "'Courier New', Courier, monospace",
+            aspectRatio: "1.91/1",
+            paddingTop: "20px", // Added padding to the top
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              fontSize: "3rem",
+              marginBottom: "10px",
+            }}
+          >
+            {sharedUsername}'s Weekly Tips
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {sharedWeeklyTips && sharedWeeklyTips.length > 0 ? (
+              <ChartComponent
+                data={sharedWeeklyTips}
+                dates={sharedWeeklyDates}
+              />
+            ) : (
+              "No data available"
+            )}
+          </div>
+        </div>
+      ),
+      buttons: [
+        <Button
+          key="tip-cmplx"
+          action="link"
+          target="https://warpcast.com/cmplx.eth/0x56ab5eff"
+        >
+          Tip cmplx
+        </Button>,
+        <Button
+          key="count-tips"
+          action="post"
+          target={{ query: { checkTips: true } }}
+        >
+          Count My Tips
+        </Button>,
+        <Button key="share" action="link" target={shareUrl}>
+          Share
+        </Button>,
+      ],
+      state: {
+        fid: parseInt(sharedFid, 10),
+        username: sharedUsername,
+        weeklyTips: sharedWeeklyTips,
+        weeklyDates: sharedWeeklyDates,
+      },
+    };
+  }
 
   if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
     const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
