@@ -10,6 +10,7 @@ export type State = {
   tipAmount?: number;
   date?: string;
   weeklyTips?: number[];
+  weeklyDates?: string[];
 };
 
 const frames = createFrames<State>({
@@ -74,6 +75,7 @@ export const handleRequest = frames(async (ctx) => {
             color: "#00FF00",
             fontFamily: "'Courier New', Courier, monospace",
             aspectRatio: "1.91/1",
+            paddingTop: "20px", // Added padding to the top
           }}
         >
           <div
@@ -183,10 +185,36 @@ export const handleRequest = frames(async (ctx) => {
       }
 
       const duneData = await duneResponse.json();
-      const weeklyTips = duneData.result?.rows.map(
-        (row: any) => row["Total Valid Tips"]
-      );
+      const weeklyData = duneData.result?.rows.map((row: any) => ({
+        tips: row["Total Valid Tips"],
+        date: `${new Date(row["Date"]).getMonth() + 1}/${new Date(
+          row["Date"]
+        ).getDate()}`,
+      }));
+      const weeklyTips = weeklyData.map((data: any) => data.tips);
+      const weeklyDates = weeklyData.map((data: any) => data.date);
       console.log("Fetched weekly tips:", weeklyTips);
+      console.log("Fetched weekly dates:", weeklyDates);
+
+      // Fetching the username for reliable source of truth
+      console.log(`Fetching username for FID: ${fid}`);
+      const neynarUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`;
+      const neynarResponse = await fetch(neynarUrl, {
+        headers: {
+          accept: "application/json",
+          api_key: process.env.NEYNAR_API_KEY as string,
+        },
+      });
+
+      if (!neynarResponse.ok) {
+        throw new Error(
+          `Neynar API request failed with status: ${neynarResponse.status}`
+        );
+      }
+
+      const neynarData = await neynarResponse.json();
+      const username = neynarData.users[0]?.username;
+      console.log(`Fetched username: ${username}`);
 
       const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
       const embedUrl = encodeURIComponent(
@@ -208,6 +236,7 @@ export const handleRequest = frames(async (ctx) => {
               color: "#00FF00",
               fontFamily: "'Courier New', Courier, monospace",
               aspectRatio: "1.91/1",
+              paddingTop: "20px", // Added padding to the top
             }}
           >
             <div
@@ -217,17 +246,19 @@ export const handleRequest = frames(async (ctx) => {
                 marginBottom: "20px",
               }}
             >
-              @{fid} Weekly Tips
+              {username}'s Weekly Tips
             </div>
             <div
               style={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                width: "100%",
+                height: "100%",
               }}
             >
               {weeklyTips && weeklyTips.length > 0 ? (
-                <ChartComponent data={weeklyTips} />
+                <ChartComponent data={weeklyTips} dates={weeklyDates} />
               ) : (
                 "No data available"
               )}
@@ -253,7 +284,7 @@ export const handleRequest = frames(async (ctx) => {
             Share
           </Button>,
         ],
-        state: { fid, weeklyTips },
+        state: { fid, username, weeklyTips, weeklyDates },
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -394,6 +425,7 @@ export const handleRequest = frames(async (ctx) => {
             color: "#00FF00",
             fontFamily: "'Courier New', Courier, monospace",
             aspectRatio: "1.91/1",
+            paddingTop: "20px", // Added padding to the top
           }}
         >
           <div
