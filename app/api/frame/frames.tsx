@@ -3,7 +3,6 @@ import { createFrames, Button } from "frames.js/next";
 import { appURL } from "../../../utils";
 import ChartComponent from "../../../ChartComponent";
 import React from "react";
-import "chart.js/auto";
 
 export type State = {
   fid?: number;
@@ -29,15 +28,28 @@ const frames = createFrames<State>({
 
 export const handleRequest = frames(async (ctx) => {
   const fid = ctx.message?.requesterFid;
+  console.log("Requester FID:", fid);
 
   const imageUrl = new URL("/image-new.png", appURL()).toString();
 
   const urlParams = ctx.url.searchParams;
+  console.log("URL Parameters:", urlParams.toString());
 
   const sharedFid = urlParams.get("fid");
   const sharedTipAmount = urlParams.get("tipAmount");
   const sharedUsername = urlParams.get("username");
   const sharedDate = urlParams.get("date");
+
+  console.log(
+    "Shared Params - FID:",
+    sharedFid,
+    "Tip Amount:",
+    sharedTipAmount,
+    "Username:",
+    sharedUsername,
+    "Date:",
+    sharedDate
+  );
 
   if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
     const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
@@ -157,6 +169,7 @@ export const handleRequest = frames(async (ctx) => {
   if (urlParams.has("showWeekly")) {
     try {
       const duneUrl = `https://api.dune.com/api/v1/query/3915099/results?limit=7&filters=fid=${fid}`;
+      console.log("Dune API URL:", duneUrl);
       const duneResponse = await fetch(duneUrl, {
         headers: {
           "X-Dune-API-Key": process.env.DUNE_API_KEY as string,
@@ -330,6 +343,7 @@ export const handleRequest = frames(async (ctx) => {
 
     const neynarData = await neynarResponse.json();
     const username = neynarData.users[0]?.username;
+    console.log(`Fetched username: ${username}`);
 
     console.log(`Fetching tip amount for FID: ${fid}`);
     const duneUrl = `https://api.dune.com/api/v1/query/3915099/results?limit=1&filters=fid=${fid}`;
@@ -351,6 +365,10 @@ export const handleRequest = frames(async (ctx) => {
       duneData.result?.rows[0]["Date"]
     ).toLocaleDateString();
     const currentDate = new Date().toLocaleDateString();
+
+    console.log(
+      `Tip amount: ${tipAmount}, Query Date: ${queryDate}, Current Date: ${currentDate}`
+    );
 
     const finalTipAmount = queryDate === currentDate ? tipAmount : 0;
 
