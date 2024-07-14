@@ -1,8 +1,16 @@
 import React from "react";
 
-const ChartComponent = ({ data, dates }) => {
+interface ChartComponentProps {
+  data: number[];
+  dates: string[];
+}
+
+const ChartComponent: React.FC<ChartComponentProps> = ({ data, dates }) => {
   const maxAmount = Math.max(...data);
-  const totalAmount = data.reduce((total, amount) => total + amount, 0);
+  const totalAmount = data.reduce(
+    (total: number, amount: number) => total + amount,
+    0
+  );
 
   return (
     <div
@@ -34,7 +42,7 @@ const ChartComponent = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "100%",
+            width: "110%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -42,9 +50,11 @@ const ChartComponent = ({ data, dates }) => {
           <span
             style={{
               position: "absolute",
-              bottom: "-20px",
-              right: "0",
-              fontSize: "1rem",
+              bottom: "-15px",
+              left: "-100px",
+              fontSize: "1.5rem",
+              textAlign: "left",
+              color: "#FFFFFF",
             }}
           >
             {maxAmount}
@@ -54,7 +64,7 @@ const ChartComponent = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "100%",
+            width: "110%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -62,9 +72,11 @@ const ChartComponent = ({ data, dates }) => {
           <span
             style={{
               position: "absolute",
-              bottom: "-20px",
-              right: "0",
-              fontSize: "1rem",
+              bottom: "-15px",
+              left: "-100px",
+              fontSize: "1.5rem",
+              textAlign: "left",
+              color: "#FFFFFF",
             }}
           >
             {maxAmount / 2}
@@ -74,7 +86,7 @@ const ChartComponent = ({ data, dates }) => {
           style={{
             display: "flex",
             borderBottom: "1px solid #FFFFFF",
-            width: "100%",
+            width: "110%",
             justifyContent: "flex-end",
             position: "relative",
           }}
@@ -82,9 +94,11 @@ const ChartComponent = ({ data, dates }) => {
           <span
             style={{
               position: "absolute",
-              bottom: "-20px",
-              right: "0",
-              fontSize: "1rem",
+              bottom: "-15px",
+              left: "-100px",
+              fontSize: "1.5rem",
+              textAlign: "left",
+              color: "#ffffff",
             }}
           >
             0

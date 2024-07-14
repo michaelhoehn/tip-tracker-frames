@@ -243,7 +243,7 @@ export const handleRequest = frames(async (ctx) => {
               style={{
                 display: "flex",
                 fontSize: "3rem",
-                marginBottom: "20px",
+                marginBottom: "10px",
               }}
             >
               {username}'s Weekly Tips
