@@ -59,7 +59,9 @@ export const handleRequest = frames(async (ctx) => {
   );
 
   if (sharedFid && sharedWeeklyTips && sharedWeeklyDates && sharedUsername) {
-    const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
+    const shareText = encodeURIComponent(
+      `I just counted my daily $degen tips using the Degen Tip Jar by @cmplx.eth`
+    );
     const embedUrl = encodeURIComponent(
       `${appURL()}/api/frame?fid=${sharedFid}&weeklyTips=${sharedWeeklyTips}&weeklyDates=${sharedWeeklyDates}&username=${sharedUsername}`
     );
@@ -140,7 +142,9 @@ export const handleRequest = frames(async (ctx) => {
   }
 
   if (sharedFid && sharedTipAmount && sharedUsername && sharedDate) {
-    const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
+    const shareText = encodeURIComponent(
+      `I just counted my daily $degen tips using the Degen Tip Jar by @cmplx.eth`
+    );
     const embedUrl = encodeURIComponent(
       `${appURL()}/api/frame?fid=${sharedFid}&tipAmount=${sharedTipAmount}&username=${
         sharedUsername || sharedFid
@@ -305,7 +309,9 @@ export const handleRequest = frames(async (ctx) => {
       const username = neynarData.users[0]?.username;
       console.log(`Fetched username: ${username}`);
 
-      const shareText = encodeURIComponent(`Weekly Tip Jar by @cmplx.eth`);
+      const shareText = encodeURIComponent(
+        `I just counted my daily $degen tips using the Degen Tip Jar by @cmplx.eth`
+      );
       const embedUrl = encodeURIComponent(
         `${appURL()}/api/frame?fid=${fid}&weeklyTips=${weeklyTips}&weeklyDates=${weeklyDates}&username=${username}`
       );
@@ -492,7 +498,9 @@ export const handleRequest = frames(async (ctx) => {
 
     const finalTipAmount = queryDate === currentDate ? tipAmount : 0;
 
-    const shareText = encodeURIComponent(`Daily Tip Jar by @cmplx.eth`);
+    const shareText = encodeURIComponent(
+      `I just counted my daily $degen tips using the Degen Tip Jar by @cmplx.eth`
+    );
     const embedUrl = encodeURIComponent(
       `${appURL()}/api/frame?fid=${fid}&tipAmount=${finalTipAmount}&username=${
         username || fid
